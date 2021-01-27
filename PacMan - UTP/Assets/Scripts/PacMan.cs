@@ -5,6 +5,7 @@ using UnityEngine;
 public class PacMan : MonoBehaviour
 {
     public float speed = 4.0f;
+    public Vector2 orientation;
 
     public Sprite idleSprite;
 
@@ -25,6 +26,7 @@ public class PacMan : MonoBehaviour
             currentNode = node;
         }
         direction = Vector2.left;
+        orientation = Vector2.left;
         ChangePosition(direction);
     }
 
@@ -32,7 +34,6 @@ public class PacMan : MonoBehaviour
     void Update()
     {
 
-        Debug.Log("Wynik:" + GameObject.Find("Game").GetComponent<GameBoard>().score);
         CheckInput();
         Move();
         UpdateOrientation();
@@ -101,13 +102,13 @@ public class PacMan : MonoBehaviour
             {
                 currentNode = targetNode;
 
-                transform.localPosition = currentNode.transform.position;
+                transform.position = currentNode.transform.position;
 
                 GameObject otherPortal = GetPortal(currentNode.transform.position);
 
                 if(otherPortal != null)
                 {
-                    transform.localPosition = otherPortal.transform.position;
+                    transform.position = otherPortal.transform.position;
 
                     currentNode = otherPortal.GetComponent<Node>();
                 }
@@ -133,7 +134,7 @@ public class PacMan : MonoBehaviour
             }
             else
             {
-                transform.localPosition += (Vector3)direction * speed * Time.deltaTime;
+                transform.position += (Vector3)direction * speed * Time.deltaTime;
             }
         }
         
@@ -153,6 +154,8 @@ public class PacMan : MonoBehaviour
     void UpdateOrientation()
     {
         if(direction == Vector2.left) {
+
+            orientation = Vector2.left;
             transform.localRotation = Quaternion.Euler(0, 0, 0);
             var newScale = transform.localScale;
             newScale.x = -1;
@@ -160,6 +163,7 @@ public class PacMan : MonoBehaviour
             transform.localScale = newScale;
         }
         else if (direction == Vector2.right) {
+            orientation = Vector2.right;
             transform.localRotation = Quaternion.Euler(0, 0, 0);
             var newScale = transform.localScale;
             newScale.x = 1;
@@ -167,10 +171,12 @@ public class PacMan : MonoBehaviour
             transform.localScale = newScale;
         }
         else if (direction == Vector2.up) {
+            orientation = Vector2.up;
             transform.localScale = new Vector3(1, 1, 1);
             transform.localRotation = Quaternion.Euler(0, 0, 90);
         }
         else if (direction == Vector2.down) {
+            orientation = Vector2.down;
             transform.localScale = new Vector3(1, 1, 1);
             transform.localRotation = Quaternion.Euler(0, 0, -90);
         }
@@ -254,7 +260,7 @@ public class PacMan : MonoBehaviour
     bool OverShotTarget()
     {
         float nodeToTarget = LengthFromNode(targetNode.transform.position);
-        float nodeToSelf = LengthFromNode(transform.localPosition);
+        float nodeToSelf = LengthFromNode(transform.position);
 
         return nodeToSelf > nodeToTarget;
     }
