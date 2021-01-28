@@ -6,8 +6,13 @@ public class PacMan : MonoBehaviour
 {
     public float speed = 4.0f;
     public Vector2 orientation;
+    public AudioClip chomp1;
+    public AudioClip chomp2;
 
     public Sprite idleSprite;
+
+    private bool playedChomp1 = false;
+    private AudioSource audio;
 
     private Vector2 direction = Vector2.zero;
     private Vector2 nextDirection;
@@ -19,6 +24,9 @@ public class PacMan : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        audio = transform.GetComponent<AudioSource>();
+
         Node node = getNodeAtPosition(transform.localPosition);
 
         if (node != null)
@@ -41,6 +49,20 @@ public class PacMan : MonoBehaviour
         ConsumePellet();
 
         
+    }
+
+    void PlayChompSound()
+    {
+        if (playedChomp1)
+        {
+            audio.PlayOneShot(chomp2);
+            playedChomp1 = false;
+        }
+        else
+        {
+            audio.PlayOneShot(chomp1);
+            playedChomp1 = true;
+        }
     }
 
     void CheckInput()
@@ -224,6 +246,7 @@ public class PacMan : MonoBehaviour
                     tile.didConsume = true;
                     GameObject.Find("Game").GetComponent<GameBoard>().score += 1;
                     pelletsConsumed++;
+                    PlayChompSound();
                 }
             }
         }

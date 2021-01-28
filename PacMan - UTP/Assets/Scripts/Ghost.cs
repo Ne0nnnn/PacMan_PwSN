@@ -23,11 +23,15 @@ public class Ghost : MonoBehaviour
 
     public float moveSpeed = 3.9f;
 
-    public float ghostRealeaseTimer = 0;
-    public int pinkRealeaseTimer = 5;
+    public float ghostReleaseTimer = 0;
+    public int pinkReleaseTimer = 5;
+    public int inkyReleaseTimer = 14;
+    public int clydeReleaseTimer = 21;
+
     public bool isInGhostHouse;
 
     public Node startingPosition;
+    public Node homeNode;
 
     public int scatterModeTimer1 = 7;
     public int chaseModeTimer1 = 20;
@@ -36,6 +40,11 @@ public class Ghost : MonoBehaviour
     public int scatterModeTimer3 = 5;
     public int chaseModeTimer3 = 20;
     public int scatterModeTimer4 = 5;
+
+    public RuntimeAnimatorController ghostUp;
+    public RuntimeAnimatorController ghostDown;
+    public RuntimeAnimatorController ghostLeft;
+    public RuntimeAnimatorController ghostRight;
 
     private int modeChangeIteration = 1;
     private float modeChangeTimer = 0;
@@ -65,11 +74,13 @@ public class Ghost : MonoBehaviour
             targetNode = currentNode.neighbors[0];
         }
         else
-        {
+        {   
             direction = Vector2.left;
             targetNode = ChooseNextNode();
         }
         previousNode = currentNode;
+
+        UpdateAnimatorController ();
         
     }
 
@@ -78,9 +89,30 @@ public class Ghost : MonoBehaviour
     {
         ModeUpdate();
         Move();
-        RealeaseGhosts();
+        ReleaseGhosts();
     }
-
+    void UpdateAnimatorController()
+    {
+        if(direction == Vector2.up)
+        {
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostUp;
+        }else if(direction == Vector2.down)
+        {
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostDown;
+        }
+        else if (direction == Vector2.left)
+        {
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+        }
+        else if (direction == Vector2.right)
+        {
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostRight;
+        }
+        else
+        {
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+        }
+    }
     Node GetNodeAtPosition (Vector2 pos)
     {
         GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int)pos.x, (int)pos.y];
@@ -140,15 +172,15 @@ public class Ghost : MonoBehaviour
 
     Vector2 GetRedGhostTargetTile()
     {
-        Vector2 pacManPosition = pacMan.transform.position;
+        Vector2 pacManPosition = pacMan.transform.localPosition;
         Vector2 targetTile = new Vector2(Mathf.RoundToInt(pacManPosition.x), Mathf.RoundToInt(pacManPosition.y)); //tam gdzie pac man
-
         return targetTile;
     }
 
     Vector2 GetPinkGhostTargetTile()
     {
-        Vector2 pacManPosition = pacMan.transform.position;
+        
+        Vector2 pacManPosition = pacMan.transform.localPosition;
         Vector2 pacManOrientation = pacMan.GetComponent<PacMan>().orientation;
 
         int pacManPositionX = Mathf.RoundToInt(pacManPosition.x);
@@ -158,28 +190,92 @@ public class Ghost : MonoBehaviour
         Vector2 targetTile = pacManTile + (4 * pacManOrientation);  //4 kroki przed pac manem
 
         return targetTile;
+
     }
 
-    Vector2 GetTargetTile()
+
+    Vector2 GetBlueGhostTargetTile()
     {
+        Vector2 pacManPosition = pacMan.transform.localPosition;
+        Vector2 pacManOrientation = pacMan.GetComponent<PacMan>().orientation;
+
+        int pacManPositionX = Mathf.RoundToInt(pacManPosition.x);
+        int pacManPositionY = Mathf.RoundToInt(pacManPosition.y);
+
+        Vector2 pacManTile = new Vector2(pacManPositionX, pacManPositionY);
+        Vector2 targetTile = pacManTile + (2 * pacManOrientation); //2 kroki przed pac manem
+
+        Vector2 tempBlinkyPosition = GameObject.Find("Ghost_blinky").transform.localPosition;
+        int blinkyPositionX = Mathf.RoundToInt(tempBlinkyPosition.x);
+        int blinkyPositionY= Mathf.RoundToInt(tempBlinkyPosition.y);
+
+        tempBlinkyPosition = new Vector2(blinkyPositionX, blinkyPositionY);
+
+        float distance = GetDistance(tempBlinkyPosition, targetTile);
+        distance *= 2;
+
+        targetTile = new Vector2(tempBlinkyPosition.x + distance, tempBlinkyPosition.y + distance);
+
+        return targetTile;
+
+    }
+    Vector2 GetOrangeGhostTargetTile()
+    {
+        Vector2 pacManPosition = pacMan.transform.localPosition;
+        float distance = GetDistance(transform.localPosition, pacManPosition);
         Vector2 targetTile = Vector2.zero;
-        if (ghostType == GhostType.Red)
+
+        if(distance > 8)
         {
-            targetTile = GetRedGhostTargetTile();
+            targetTile = new Vector2(Mathf.RoundToInt(pacManPosition.x), Mathf.RoundToInt(pacManPosition.y));
+
         }
-        else if(ghostType == GhostType.Pink)
+        else if(distance < 8)
         {
-            targetTile = GetPinkGhostTargetTile();
+            targetTile = homeNode.transform.position;
         }
 
         return targetTile;
     }
 
+
+    Vector2 GetTargetTile()
+    {
+        Vector2 targetTile = Vector2.zero;
+
+        if (ghostType == GhostType.Red)
+        {
+            targetTile = GetRedGhostTargetTile();
+        }
+        else if (ghostType == GhostType.Pink)
+        {
+            targetTile = GetPinkGhostTargetTile();
+        }
+        else if (ghostType == GhostType.Blue)
+        {
+            targetTile = GetBlueGhostTargetTile();
+        }
+        else if (ghostType == GhostType.Orange)
+        {
+            targetTile = GetOrangeGhostTargetTile();
+        }
+
+        return targetTile;
+    }   
+
     Node ChooseNextNode()  //nastepne skrzyzowanie
     {
         Vector2 targetTile = Vector2.zero;
 
-        targetTile = GetTargetTile();
+        if(currentMode == Mode.Chase)
+        {
+            targetTile = GetTargetTile();
+        }else if(currentMode == Mode.Scatter)
+        {
+            targetTile = homeNode.transform.position;
+        }
+
+       
 
         Node moveToNode = null;
 
@@ -227,21 +323,42 @@ public class Ghost : MonoBehaviour
         return moveToNode;
     }
 
-    void RealeasePinkGhost()
+    void ReleasePinkGhost()
     {
-        if(ghostType == GhostType.Pink && isInGhostHouse)
+        if (ghostType == GhostType.Pink && isInGhostHouse)
         {
             isInGhostHouse = false;
         }
     }
 
-    void RealeaseGhosts()
+    void ReleaseBlueGhost()
     {
-        ghostRealeaseTimer += Time.deltaTime;
-        if(ghostRealeaseTimer > pinkRealeaseTimer)
+        if (ghostType == GhostType.Blue && isInGhostHouse)
         {
-            RealeasePinkGhost();
+            isInGhostHouse = false;
         }
+    }
+
+    void ReleaseOrangeGhost()
+    {
+        if (ghostType == GhostType.Orange && isInGhostHouse)
+        {
+            isInGhostHouse = false;
+        }
+    }
+
+    void ReleaseGhosts()
+    {
+        ghostReleaseTimer += Time.deltaTime;
+
+        if (ghostReleaseTimer > pinkReleaseTimer)
+            ReleasePinkGhost();
+        if (ghostReleaseTimer > inkyReleaseTimer)
+            ReleaseBlueGhost();
+        if (ghostReleaseTimer > clydeReleaseTimer)
+            ReleaseOrangeGhost();
+
+
     }
     void Move()
     {
@@ -264,6 +381,8 @@ public class Ghost : MonoBehaviour
                 targetNode = ChooseNextNode();
                 previousNode = currentNode;
                 currentNode = null;
+
+                UpdateAnimatorController();
             }
             else
             {

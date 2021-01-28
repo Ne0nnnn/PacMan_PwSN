@@ -22,7 +22,7 @@ public class GameBoard : MonoBehaviour
         {
             Vector2 pos = i.transform.position;
 
-            if(i.name != "PacMan" && i.name != "Nodes" && i.name != "NonNodes" && i.name != "Maze" && i.name != "Pellets" && i.tag != "Ghost")
+            if(i.name != "PacMan" && i.name != "Nodes" && i.name != "NonNodes" && i.name != "Maze" && i.name != "Pellets" && i.tag != "Ghost" && i.tag != "ghostHome")
             {
                 if (i.GetComponent < Tile>() != null)
                 {
