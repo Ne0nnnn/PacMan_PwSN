@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2363801ab3abebd4f84b0964c574a88c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 927eee9e40269a747a5c6f374878c0b8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,13 +97,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ghostType: 0
   moveSpeed: 5.9
+  normalMoveSpeed: 5.9
+  frigtendedMoveSpeed: 2.9
+  consumedMovedSpeed: 15
   ghostReleaseTimer: 0
   pinkReleaseTimer: 5
   inkyReleaseTimer: 14
   clydeReleaseTimer: 21
+  frightendedModeDuration: 10
+  startBlinkingAt: 7
   isInGhostHouse: 0
   startingPosition: {fileID: 0}
   homeNode: {fileID: 0}
+  ghostHouse: {fileID: 0}
+  eyesUp: {fileID: 0}
+  eyesDown: {fileID: 0}
+  eyesLeft: {fileID: 0}
+  eyesRight: {fileID: 0}
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -115,6 +125,8 @@ MonoBehaviour:
   ghostDown: {fileID: 9100000, guid: 85a03d8bcad8e294dbe2354c95fe754c, type: 2}
   ghostLeft: {fileID: 9100000, guid: 695da9d1a060d194c92490bbb225ad0f, type: 2}
   ghostRight: {fileID: 9100000, guid: af7c2e8bcc9cb7446ac15cabb7e31a70, type: 2}
+  ghostWhite: {fileID: 0}
+  ghostBlue: {fileID: 0}
 --- !u!95 &2120130894692396900
 Animator:
   serializedVersion: 3

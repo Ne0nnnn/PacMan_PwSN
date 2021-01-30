@@ -9,10 +9,15 @@ public class PacMan : MonoBehaviour
     public AudioClip chomp1;
     public AudioClip chomp2;
 
+    public RuntimeAnimatorController chompAnimation;
+    public RuntimeAnimatorController deathAnimation;
+
     public Sprite idleSprite;
 
     private bool playedChomp1 = false;
     private AudioSource audio;
+
+    public bool canMove = true;
 
     private Vector2 direction = Vector2.zero;
     private Vector2 nextDirection;
@@ -42,14 +47,34 @@ public class PacMan : MonoBehaviour
         ChangePosition(direction);
     }
 
-    public void Restart ()
+    public void MoveToStartingPosition()
     {
+
+        // transform.GetComponent<SpriteRenderer>().enabled = true;
+       /* transform.GetComponent<Animator>().runtimeAnimatorController = chompAnimation;
+        transform.GetComponent<Animator>().enabled = true;
+*/
+
         transform.position = startingPosition.transform.position;
-        currentNode = startingPosition;
+        transform.GetComponent<SpriteRenderer>().sprite = idleSprite;
 
         direction = Vector2.left;
         orientation = Vector2.left;
+
+        //ChangePosition(direction);
+        UpdateOrientation();
+    }
+
+    public void Restart ()
+    {
+        canMove = true;
+
+        currentNode = startingPosition;
+
         nextDirection = Vector2.left;
+
+        transform.GetComponent<Animator>().runtimeAnimatorController = chompAnimation;
+        transform.GetComponent<Animator>().enabled = true;
 
         ChangePosition(direction);
     }
@@ -57,13 +82,14 @@ public class PacMan : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        CheckInput();
-        Move();
-        UpdateOrientation();
-        UpdateAnimationState();
-        ConsumePellet();
-
+        if (canMove)
+        {
+            CheckInput();
+            Move();
+            UpdateOrientation();
+            UpdateAnimationState();
+            ConsumePellet();
+        }
         
     }
 

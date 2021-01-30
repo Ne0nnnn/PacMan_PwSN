@@ -28,6 +28,8 @@ public class Ghost : MonoBehaviour
     private float previousMoveSpeed;
     public float consumedMovedSpeed = 15f;
 
+    public bool canMove = true;
+
     public float ghostReleaseTimer = 0;
     public int pinkReleaseTimer = 5;
     public int inkyReleaseTimer = 14;
@@ -108,9 +110,36 @@ public class Ghost : MonoBehaviour
 
     }
 
+
+    public void MoveToStartingPosition()
+    {
+        if (transform.name != "Ghost_Blinky")
+            isInGhostHouse = true;
+
+        transform.position = startingPosition.transform.position;
+
+        if (isInGhostHouse)
+        {
+            direction = Vector2.up;
+        }
+        else
+        {
+            direction = Vector2.left;
+        }
+        UpdateAnimatorController();
+    }
+
     public void Restart()
     {
-        transform.position = startingPosition.transform.position;
+
+        canMove = true;
+
+        //transform.GetComponent<SpriteRenderer>().enabled = true;
+
+        currentMode = Mode.Scatter;
+        moveSpeed = normalMoveSpeed;
+        previousMoveSpeed = 0;
+
 
         ghostReleaseTimer = 0;
         modeChangeIteration = 1;
@@ -139,11 +168,15 @@ public class Ghost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ModeUpdate();
-        Move();
-        ReleaseGhosts();
-        CheckCollision();
-        CheckIsInGhostHouse();
+        if (canMove)
+        {
+            ModeUpdate();
+            Move();
+            ReleaseGhosts();
+            CheckCollision();
+            CheckIsInGhostHouse();
+        }
+       
     }
 
     void CheckIsInGhostHouse()
@@ -191,7 +224,11 @@ public class Ghost : MonoBehaviour
             }
             else
             {
-                GameObject.Find("Game").transform.GetComponent<GameBoard>().Restart();
+                if(currentMode != Mode.Consumed)
+                {
+                    GameObject.Find("Game").transform.GetComponent<GameBoard>().StartDeath();
+                }
+                
             }
 
         }
