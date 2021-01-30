@@ -21,12 +21,17 @@ public class Ghost : MonoBehaviour
 
     public GhostType ghostType = GhostType.Red;
 
-    public float moveSpeed = 3.9f;
+    public float moveSpeed = 5.9f;
+    public float frigtendedMoveSpeed = 2.9f;
+    private float previousMoveSpeed;
 
     public float ghostReleaseTimer = 0;
     public int pinkReleaseTimer = 5;
     public int inkyReleaseTimer = 14;
     public int clydeReleaseTimer = 21;
+
+    public int frightendedModeDuration = 10;
+    public int startBlinkingAt = 7;
 
     public bool isInGhostHouse;
 
@@ -45,9 +50,15 @@ public class Ghost : MonoBehaviour
     public RuntimeAnimatorController ghostDown;
     public RuntimeAnimatorController ghostLeft;
     public RuntimeAnimatorController ghostRight;
+    public RuntimeAnimatorController ghostWhite;
+    public RuntimeAnimatorController ghostBlue;
 
     private int modeChangeIteration = 1;
     private float modeChangeTimer = 0;
+
+    private float frightendedModeTimer = 0;
+    private float blinkTimer = 0;
+    private bool frightendedModeisWhite = false;
 
     Mode currentMode = Mode.Scatter;
     Mode previousMode;
@@ -90,28 +101,51 @@ public class Ghost : MonoBehaviour
         ModeUpdate();
         Move();
         ReleaseGhosts();
+        CheckCollision();
+    }
+
+    void CheckCollision()
+    {
+        Rect ghostRect = new Rect(transform.position, transform.GetComponent<SpriteRenderer>().sprite.bounds.size / 4); //obiekt kolizji dla duchow - 4 razy mniejszy niz grafika
+        Rect pacManRect = new Rect(pacMan.transform.position, pacMan.transform.GetComponent<SpriteRenderer>().sprite.bounds.size / 4);
+
+        if (ghostRect.Overlaps(pacManRect))
+        {
+            Debug.Log("COLLISION");
+        }
     }
     void UpdateAnimatorController()
     {
-        if(direction == Vector2.up)
+        if (currentMode != Mode.Frightened)
         {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostUp;
-        }else if(direction == Vector2.down)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostDown;
+            if (direction == Vector2.up)
+            {
+                transform.GetComponent<Animator>().runtimeAnimatorController = ghostUp;
+            }
+            else if (direction == Vector2.down)
+            {
+                transform.GetComponent<Animator>().runtimeAnimatorController = ghostDown;
+            }
+            else if (direction == Vector2.left)
+            {
+                transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+            }
+            else if (direction == Vector2.right)
+            {
+                transform.GetComponent<Animator>().runtimeAnimatorController = ghostRight;
+            }
+            else
+            {
+                transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+            }
         }
-        else if (direction == Vector2.left)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
-        }
-        else if (direction == Vector2.right)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostRight;
-        }
+
         else
         {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostBlue;
         }
+
+        
     }
     Node GetNodeAtPosition (Vector2 pos)
     {
@@ -165,9 +199,31 @@ public class Ghost : MonoBehaviour
     }
 
     void ChangeMode (Mode m)
+    { 
+        if (currentMode == Mode.Frightened)
+        {
+            moveSpeed = previousMoveSpeed;
+        }
+
+        if (m == Mode.Frightened)
+        {
+            previousMoveSpeed = moveSpeed;
+            moveSpeed = frigtendedMoveSpeed;
+        }
+
+        if (currentMode != m)
+        {
+            previousMode = currentMode;
+            currentMode = m;
+        }
+
+        UpdateAnimatorController();
+    }
+
+    public void StartFrightenedMode()
     {
-        previousMode = currentMode;
-        currentMode = m;
+        frightendedModeTimer = 0;
+        ChangeMode(Mode.Frightened);
     }
 
     Vector2 GetRedGhostTargetTile()
@@ -193,7 +249,6 @@ public class Ghost : MonoBehaviour
 
     }
 
-
     Vector2 GetBlueGhostTargetTile()
     {
         Vector2 pacManPosition = pacMan.transform.localPosition;
@@ -205,7 +260,7 @@ public class Ghost : MonoBehaviour
         Vector2 pacManTile = new Vector2(pacManPositionX, pacManPositionY);
         Vector2 targetTile = pacManTile + (2 * pacManOrientation); //2 kroki przed pac manem
 
-        Vector2 tempBlinkyPosition = GameObject.Find("Ghost_blinky").transform.localPosition;
+        Vector2 tempBlinkyPosition = GameObject.Find("Ghost_Blinky").transform.localPosition;
         int blinkyPositionX = Mathf.RoundToInt(tempBlinkyPosition.x);
         int blinkyPositionY= Mathf.RoundToInt(tempBlinkyPosition.y);
 
@@ -219,6 +274,7 @@ public class Ghost : MonoBehaviour
         return targetTile;
 
     }
+
     Vector2 GetOrangeGhostTargetTile()
     {
         Vector2 pacManPosition = pacMan.transform.localPosition;
@@ -449,7 +505,33 @@ public class Ghost : MonoBehaviour
         }
         else if (currentMode == Mode.Frightened)
         {
+            frightendedModeTimer += Time.deltaTime;
 
+            if(frightendedModeTimer >= frightendedModeDuration)
+            {
+                frightendedModeTimer = 0;
+                ChangeMode(previousMode);
+            }
+
+            if(frightendedModeTimer >= startBlinkingAt)
+            {
+                blinkTimer += Time.deltaTime;
+                if(blinkTimer >= 0.1f)
+                {
+                    blinkTimer = 0f;
+
+                    if (frightendedModeisWhite)
+                    {
+                        transform.GetComponent<Animator>().runtimeAnimatorController = ghostBlue;
+                        frightendedModeisWhite = false;
+                    }
+                    else
+                    {
+                        transform.GetComponent<Animator>().runtimeAnimatorController = ghostWhite;
+                        frightendedModeisWhite = true;
+                    }
+                }
+            }
         }
     }
 }
