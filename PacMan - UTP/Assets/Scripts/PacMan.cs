@@ -21,6 +21,8 @@ public class PacMan : MonoBehaviour
 
     private Node currentNode, previousNode, targetNode;
 
+    private Node startingPosition;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,12 +31,26 @@ public class PacMan : MonoBehaviour
 
         Node node = getNodeAtPosition(transform.localPosition);
 
+        startingPosition = node;
+
         if (node != null)
         {
             currentNode = node;
         }
         direction = Vector2.left;
         orientation = Vector2.left;
+        ChangePosition(direction);
+    }
+
+    public void Restart ()
+    {
+        transform.position = startingPosition.transform.position;
+        currentNode = startingPosition;
+
+        direction = Vector2.left;
+        orientation = Vector2.left;
+        nextDirection = Vector2.left;
+
         ChangePosition(direction);
     }
 
