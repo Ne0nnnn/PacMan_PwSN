@@ -290,7 +290,13 @@ public class PacMan : MonoBehaviour
 
                     if (GameMenu.isOnePlayerGame)
                     {
-                        GameObject.Find("Game").transform.GetComponent<GameBoard>().playerOneScore += 10;
+
+                        if (tile.isSuperPellet)
+                            GameBoard.playerOneScore += 50;
+                        else
+                            GameBoard.playerOneScore += 10;
+                        //GameObject.Find("Game").transform.GetComponent<GameBoard>().playerOneScore += 10;
+
                         GameObject.Find("Game").transform.GetComponent<GameBoard>().playerOnePelletsConsumed++;
                     }
                     //pelletsConsumed++;

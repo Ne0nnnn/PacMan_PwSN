@@ -17,9 +17,11 @@ public class GameBoard : MonoBehaviour
 
     public int totalPellets = 0;
     public int score = 0;
-    public int playerOneScore = 0;
+    public static int playerOneScore = 0;
     public int playerTwoScore = 0;
     public int pacManLives = 3;
+
+    public static int ghostConsumedRunningScore;
 
     public bool isPlayerOneUp = true;
 
@@ -180,6 +182,8 @@ public class GameBoard : MonoBehaviour
             Vector2 viewPortPoint = Camera.main.WorldToViewportPoint(pos);
             consumedGhostScoreText.GetComponent<RectTransform>().anchorMin = viewPortPoint;
             consumedGhostScoreText.GetComponent<RectTransform>().anchorMax = viewPortPoint;
+
+            consumedGhostScoreText.text = ghostConsumedRunningScore.ToString();
 
             consumedGhostScoreText.GetComponent<Text>().enabled = true;
             //dzwiek zjadania duszka
