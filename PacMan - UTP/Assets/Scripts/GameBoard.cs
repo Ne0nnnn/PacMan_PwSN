@@ -13,6 +13,8 @@ public class GameBoard : MonoBehaviour
     private bool didStartDeath = false;
     private bool didStartConsumed = false;
 
+    public int playerOnePelletsConsumed = 0;
+
     public int totalPellets = 0;
     public int score = 0;
     public int playerOneScore = 0;
@@ -74,6 +76,7 @@ public class GameBoard : MonoBehaviour
     void Update()
     {
         UpdateUI();
+        CheckPelletsConsumed();
     }
 
     void UpdateUI()
@@ -94,6 +97,22 @@ public class GameBoard : MonoBehaviour
             playerLives3.enabled = false;
             playerLives2.enabled = false;
         }
+    }
+
+    void CheckPelletsConsumed()
+    {
+        if (isPlayerOneUp)
+        {
+            if(totalPellets == playerOnePelletsConsumed)
+            {
+                PlayerWin(1);
+            }
+        }
+    }
+
+    void PlayerWin(int playerNum)
+    {
+        Debug.Log("Player " + playerNum + " can move to next level");
     }
 
     public void StartGame()
