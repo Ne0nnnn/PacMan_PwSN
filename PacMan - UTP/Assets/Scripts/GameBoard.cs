@@ -120,25 +120,25 @@ public class GameBoard : MonoBehaviour
     public void StartGame()
     {
 
-        if (GameMenu.isOnePlayerGame)
+      /*  if (GameMenu.isOnePlayerGame)
         {
             playerTwoUp.GetComponent<Text>().enabled = false;
             playerTwoScoreText.GetComponent<Text>().enabled = false;
-        }
-        else
+        }*/
+        /*else
         {
             playerTwoUp.GetComponent<Text>().enabled = true;
             playerTwoScoreText.GetComponent<Text>().enabled = true;
-        }
+        }*/
 
         if (isPlayerOneUp)
         {
             StartCoroutine(StartBlinking(playerOneUp));
         }
-        else
+        /*else
         {
             StartCoroutine(StartBlinking(playerTwoUp));
-        }
+        }*/
 
         GameObject[] o = GameObject.FindGameObjectsWithTag("Ghost");
         foreach (GameObject ghost in o)
