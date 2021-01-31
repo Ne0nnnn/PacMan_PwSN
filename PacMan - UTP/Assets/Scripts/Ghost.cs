@@ -236,11 +236,17 @@ public class Ghost : MonoBehaviour
 
     void Consumed() {
 
+        if (GameMenu.isOnePlayerGame)
+        {
+            GameObject.Find("Game").GetComponent<GameBoard>().playerOneScore += 200;
+        }
+
         currentMode = Mode.Consumed;
         previousMoveSpeed = moveSpeed;
         moveSpeed = consumedMovedSpeed;
         UpdateAnimatorController();
 
+        GameObject.Find("Game").GetComponent<GameBoard>().StartConsumed(this.GetComponent<Ghost>());
     }
 
 
