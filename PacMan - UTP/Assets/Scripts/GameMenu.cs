@@ -9,7 +9,7 @@ public class GameMenu : MonoBehaviour
     public static bool isOnePlayerGame = true;
 
     public Text playerText1;
-    public Text playerText2;
+    public Text exit;
     public Text playerSelector;
 
     // Update is called once per frame
@@ -28,12 +28,12 @@ public class GameMenu : MonoBehaviour
             if (isOnePlayerGame)
             {
                 isOnePlayerGame = false;
-                playerSelector.transform.localPosition = new Vector3(playerSelector.transform.localPosition.x, playerText2.transform.localPosition.y, playerSelector.transform.localPosition.z);
+                playerSelector.transform.localPosition = new Vector3(playerSelector.transform.localPosition.x, exit.transform.localPosition.y, playerSelector.transform.localPosition.z);
             }
         }
         else if (Input.GetKeyUp(KeyCode.Return))
         {
-            SceneManager.LoadScene("Level1");
+            SceneManager.LoadScene("LevelMenu");
         }
     }
 }

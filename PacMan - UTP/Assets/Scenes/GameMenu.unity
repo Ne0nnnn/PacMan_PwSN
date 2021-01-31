@@ -709,9 +709,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f9a0e328cd02a46b9713211540207e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isOnePlayerGame: 1
   playerText1: {fileID: 1056192418}
-  playerText2: {fileID: 1405220169}
+  exit: {fileID: 1405220169}
   playerSelector: {fileID: 922076101}
 --- !u!4 &2123025781
 Transform:
