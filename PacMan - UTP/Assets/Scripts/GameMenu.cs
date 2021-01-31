@@ -12,6 +12,8 @@ public class GameMenu : MonoBehaviour
     public Text exit;
     public Text playerSelector;
 
+    
+
     // Update is called once per frame
     void Update()
     {
@@ -33,7 +35,23 @@ public class GameMenu : MonoBehaviour
         }
         else if (Input.GetKeyUp(KeyCode.Return))
         {
-            SceneManager.LoadScene("LevelMenu");
+            if (isOnePlayerGame)
+            {
+                isOnePlayerGame = true;
+                SceneManager.LoadScene("LevelMenu");
+                Debug.Log("zaladowano menu");
+            }
+            else if (!isOnePlayerGame)
+            {
+                isOnePlayerGame = false;
+                doExitGame();
+                Debug.Log("Wychodzenie z gry");
+            }
         }
+    }
+
+    void doExitGame()
+    {
+        Application.Quit();
     }
 }

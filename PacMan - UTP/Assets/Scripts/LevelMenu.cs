@@ -33,18 +33,19 @@ public class LevelMenu : MonoBehaviour
         }
         else if (Input.GetKeyUp(KeyCode.Return))
         {
-            if(Input.GetKeyUp(KeyCode.UpArrow))
+            if(isOnePlayerGame)
             {
+                isOnePlayerGame = true;
                 SceneManager.LoadScene("Level1");
                 Debug.Log("zaladowano1");
             }
-            else
+            else if (!isOnePlayerGame)
             {
-                
+                isOnePlayerGame = false;
                 SceneManager.LoadScene("Level2");
                 Debug.Log("zaladowano2");
             }
-            
+           
         }
     }
 }
